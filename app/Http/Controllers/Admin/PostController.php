@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Admin;
 use App\Http\Controllers\Controller;
 use App\Models\Category;
 use App\Models\Post;
+use App\Models\Technology;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
 
@@ -31,7 +32,8 @@ class PostController extends Controller
     public function create()
     {
         $categories = Category::all();
-        return view('admin.posts.create', compact('categories'));
+        $technologies = Technology::all();
+        return view('admin.posts.create', compact('categories', 'technologies'));
     }
 
     /**
@@ -52,6 +54,8 @@ class PostController extends Controller
         $post->slug = Str::slug($post->title, '-');
 
         $post->save();
+
+        $post->technologies()->attach($formData['technologies']);
 
         return redirect()->route('admin.posts.show', $post);
     }
@@ -76,7 +80,8 @@ class PostController extends Controller
     public function edit(Post $post)
     {
         $categories = Category::all();
-        return view('admin.posts.edit', compact('post', 'categories'));
+        $technologies = Technology::all();
+        return view('admin.posts.edit', compact('post', 'categories', 'technologies'));
     }
 
     /**
@@ -95,6 +100,15 @@ class PostController extends Controller
         $post->slug = Str::slug($formData['title'], '-');
 
         $post->update($formData);
+
+        if(array_key_exists('technologies', $formData)) {
+
+            $post->technologies()->sync($formData['technologies']);
+
+        } else {
+
+            $post->technologies()->detach();
+        }
 
         return redirect()->route('admin.posts.show', $post);
     }
@@ -118,10 +132,12 @@ class PostController extends Controller
             "description" => 'required',
             "language" => 'required',
             "category_id" => 'nullable|exists:categories,id',
+            "technologies" => 'exists:technologies,id',
         ], [
             "title.max" => 'Il titolo deve avere massimo :max caratteri',
             "title.required" => 'Devi inserire un titolo',
             "category-id.exists" => 'La categoria deve essere presente',
+            "tecnologies.exists" => 'La tecnologia deve essere presente',
         ])->validate();
     }
 }

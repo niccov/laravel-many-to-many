@@ -5,6 +5,12 @@
     <div class="py-3">
         <h1>Visualizzazione post</h1>
         <div>Categoria: {{ $post->category?->name }}</div>
+        <div>Tecnologie: @php
+            foreach($post->technologies as $technology) {
+                echo $technology->name - ' ';
+            }
+        @endphp
+        </div>
 
         <hr>
 

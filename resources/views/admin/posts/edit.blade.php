@@ -48,6 +48,25 @@
           @enderror
         </div>
 
+        <div class="mb-3 form-group">
+          <h4>Tecnologie</h4>
+          <div class="form-check">
+            @foreach($technologies as $technology)
+              @if($errors->any())
+                <input id="technology_{{ $technology->id }}" name="technologies[]" type="checkbox" value="{{ $technology->id }}" @checked(in_array($technology->id, old('techologies', [])))>
+              @else
+                <input id="technology_{{ $technology->id }}" name="technologies[]" type="checkbox" value="{{ $technology->id }}" @checked($post->technologies->contains($technology->id))>
+              @endif
+              <label for="technology_{{ $technology->id }}">{{ $technology->name }}</label>
+            @endforeach  
+          </div>
+          @error('technologies')
+           <div class="text-danger">
+             {{$message}}
+           </div>  
+          @enderror
+        </div>
+
         <div class="mb-3">
             <label for="language">Linguaggio</label>
             <input type="text" name="language" id="language" class="form-control @error('language') is-invalid @enderror" value="{{old('language') ?? $post->language}}">
