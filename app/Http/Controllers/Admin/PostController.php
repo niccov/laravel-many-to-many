@@ -54,8 +54,9 @@ class PostController extends Controller
         $post->slug = Str::slug($post->title, '-');
 
         $post->save();
-
+        
         $post->technologies()->attach($formData['technologies']);
+        
 
         return redirect()->route('admin.posts.show', $post);
     }
@@ -133,11 +134,14 @@ class PostController extends Controller
             "language" => 'required',
             "category_id" => 'nullable|exists:categories,id',
             "technologies" => 'exists:technologies,id',
+            "cover_image" => 'nullable|image|max:2048',
         ], [
             "title.max" => 'Il titolo deve avere massimo :max caratteri',
             "title.required" => 'Devi inserire un titolo',
             "category-id.exists" => 'La categoria deve essere presente',
             "tecnologies.exists" => 'La tecnologia deve essere presente',
+            "cover_image.image" => 'Il file deve essere di formaro immagine',
+            "cover_image.max" => 'Il file non deve superare i 2MB di dimensione',
         ])->validate();
     }
 }

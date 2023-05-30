@@ -5,7 +5,7 @@
 
 <h1>Crea post</h1>
 
-    <form action="{{route('admin.posts.store')}}" method="POST">
+    <form action="{{route('admin.posts.store')}}" method="POST" enctype="multipart/form-data">
         @csrf
 
         <div class="mb-3">
@@ -59,6 +59,16 @@
            <div class="text-danger">
              {{$message}}
            </div>  
+          @enderror
+        </div>
+
+        <div class="mb-3 form-group">
+          <label for="cover_image">Immagine di copertina</label>
+          <input class="form-control @error('cover_image') is-invalid @enderror" id="cover_image" name="cover_image" type="file">
+          @error('cover_image')
+          <div class="invalid-feedback">
+            {{ $message }}
+          </div>
           @enderror
         </div>
 
