@@ -7,6 +7,7 @@ use App\Models\Category;
 use App\Models\Post;
 use App\Models\Technology;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\Validator;
 
 use Illuminate\Support\Str;
@@ -47,6 +48,12 @@ class PostController extends Controller
         $formData = $request->all();
 
         $this->validation($formData);
+
+        if($request->hasFile('cover_image')) {
+            $path = Storage::put('post_images', $request->cover_image);
+
+            $formData['cover_image'] = $path;
+        }
 
         $post = new Post();
 
@@ -98,6 +105,16 @@ class PostController extends Controller
 
         $this->validation($formData);
 
+        if($request->hasFile('cover_image')) {
+            if($post->cover_image) {
+                Storage::delete($post->cover_image);
+            }
+
+            $path = Storage::put('post_images', $request->cover_image);
+
+            $formData['cover_image'] = $path;
+        }
+
         $post->slug = Str::slug($formData['title'], '-');
 
         $post->update($formData);
@@ -122,6 +139,11 @@ class PostController extends Controller
      */
     public function destroy(Post $post)
     {
+
+        if($post->cover_image) {
+            Storage::delete($post->cover_image);
+        }
+
         $post->delete();
 
         return redirect()->route('admin.posts.index');
